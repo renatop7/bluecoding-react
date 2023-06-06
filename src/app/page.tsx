@@ -1,95 +1,79 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+
+import { useState } from 'react';
+import styles from './page.module.css';
+import Image from 'next/image';
+import Giphy from '@/components/giphy';
+import Search from '@/components/search';
+import GiphyGallery from '@/components/giphy-gallery';
+import GiphyModal from '@/components/giphy-modal';
+
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 export default function Home() {
+  const API_URL = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}`;
+  const LIMIT = 20;
+
+  const [images, setImages]: any[] = useState([]);
+  const [search, setSearch] = useState('');
+  const [offset, setOffset] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const [displayModal, setDisplayModal] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const handleSearchClick = async () => {
+    try {
+      const res = await fetch(`${API_URL}&q=${search}&limit=${LIMIT}&offset=${offset}`);
+
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      const body = await res.json();
+      const images = body.data.map((giphy: any) => giphy.images.fixed_height);
+
+      setImages(images);
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  const handlePaginationClick = (next: boolean) => () => {
+    if (next) {
+      setOffset(offset + LIMIT);
+      setPageNumber(pageNumber + 1);
+      handleSearchClick();
+    } else {
+      if (offset === 0) return;
+      setOffset(offset - LIMIT);
+      setPageNumber(pageNumber - 1);
+      handleSearchClick();
+    }
+  };
+
+  const handleClearClick = () => {
+    setSearch('');
+    setImages([]);
+  };
+
+  const handleImgClick = (index: number) => {
+    console.log('imgclick');
+    setDisplayModal(true);
+  };
+
+  const handleModalClose = () => {
+    setDisplayModal(false);
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <Search clearClick={handleClearClick} searchClick={handleSearchClick} onInputChange={(e) => setSearch(e.target.value)} search={search} />
+      {images.length ? (
+        <GiphyGallery giphys={images} pageNumber={pageNumber} nextButtonClick={handlePaginationClick(true)} previousButtonClick={handlePaginationClick(false)} imgClick={handleImgClick} />
+      ) : (
+        <></>
+      )}
+      {displayModal ? <GiphyModal giphys={images} selectedIndex={selectedImageIndex} closeClick={handleModalClose} /> : <></>}
     </main>
-  )
+  );
 }

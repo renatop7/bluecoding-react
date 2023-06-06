@@ -1,0 +1,70 @@
+.galleryContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+}
+
+.paginationButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0;
+}
+
+.paginationButton {
+  margin-left: 10px;
+  width: 150px;
+}
+
+.imageGallery {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  border: 1px solid black;
+}
+
+.giphyImg {
+  margin: 10px;
+}
+
+.modalContainer {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 1);
+  overflow: hidden;
+  text-align: center;
+}
+
+.modalDisplayImgContainer {
+  height: 70%;
+  width: auto;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.modalDisplayImg {
+  width: auto;
+  height: 100%;
+}
+
+.thumbnailGallery {
+  display: inline-block;
+  overflow-x: auto;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 20px;
+}
+
+.modalCloseButton {
+  width: 100px;
+  margin: 10px 0;
+  padding: 10px;
+}

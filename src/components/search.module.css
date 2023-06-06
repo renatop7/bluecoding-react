@@ -1,0 +1,13 @@
+.searchBoxContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.searchBoxButton {
+  width: 100px;
+  margin: 0 10px;
+}
+
+.searchBoxInput {
+  width: 200px;
+}
